@@ -1,0 +1,65 @@
+<body>
+    {{> _tvdbConfigureDialog}}
+</body>
+
+<template name="_tvdbConfigureDialog">
+    {{#if visible}}
+    <div id="tvdb-configure-dialog" class="accounts-dialog accounts-centered-dialog">
+        <p>
+            To be able to use the thetvdb.com-API, you need to go to thetvdb.com and register
+            for an API key.
+        </p>
+        <p>
+            Visit <a href="http://thetvdb.com/?tab=apiregister" target="_blank">http://thetvdb.com/?tab=apiregister</a>
+        </p>
+
+        <p>
+            Now, fill in these details.
+        </p>
+        <p>
+        <table>
+            <colgroup>
+                <col span="1" class="configuration_labels">
+                <col span="1" class="configuration_inputs">
+            </colgroup>
+            <tr>
+                <td>
+                    <label for="configure-login-service-dialog-apikey">API key</label>
+                </td>
+                <td>
+                    <input id="configure-login-service-dialog-apikey" type="text" />
+                </td>
+            </tr>
+        </table>
+        </p>
+        <div class="new-section">
+            <div class="login-button configure-login-service-dismiss-button">
+                I'll do this later
+            </div>
+            <a class="accounts-close configure-login-service-dismiss-button">&times;</a>
+
+            {{#isolate}}
+            <div class="login-button login-button-configure {{#if saveDisabled}}login-button-disabled{{/if}}"
+                 id="configure-login-service-dialog-save-configuration">
+                Save Configuration
+            </div>
+            {{/isolate}}
+        </div>
+    </div>
+    {{/if}}
+</template>
+
+<template name="_tvdbStatus">
+    {{#if configured}}
+    TVDB Status:
+        {{#if hasWorkingQueue}}
+        working...
+        {{else}}
+        idle
+        {{/if}}
+    {{else}}
+    <div class="tvdbstatus-button">
+        <div class="configure-button">Configure TVDB API</div>
+    </div>
+    {{/if}}
+</template>

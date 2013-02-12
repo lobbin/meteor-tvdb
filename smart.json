@@ -1,0 +1,8 @@
+{
+    "name": "tvdb",
+    "description": "Library for communicating with thetvdb.com",
+    "homepage": "https://github.com/lobbin/meteor-tvdb",
+    "author": "Robin Helgelin <lobbin@gmail.com>",
+    "version": "0.1",
+    "git": "https://github.com/lobbin/meteor-tvdb.git"
+}
