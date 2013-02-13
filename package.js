@@ -2,7 +2,6 @@
  * A meteor library for communicating with thetvdb.com
  *
  * @author Robin Helgelin <lobbin@gmail.com>
- * @version 0.1
  */
 
 // Package description

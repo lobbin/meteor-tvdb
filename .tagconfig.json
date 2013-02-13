@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "name": "smart.json",
+      "regexs": [
+        "\"version\": \"###\""
+      ]
+    },
+    {
+      "name": "Readme.md",
+      "regexs": [
+        "Version ###"
+      ]
+    }
+  ]
+}
