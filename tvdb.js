@@ -38,7 +38,7 @@
             this.workers = 0;
             this.listeners = {};
 
-            Meteor.autosubscribe(function() {
+            Meteor.autorun(function() {
                 Meteor.subscribe('tvdb_info');
             });
         }
@@ -149,6 +149,29 @@
 
         var self = this; self.incWorkers();
         return Meteor.call("tvdbFindTvShow", name, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
+    /**
+     * thetvdb.com API call for getting tv show information
+     * @param {Number} tvShowId Unique show id
+     * @param {APIdone} done Function called when we have a server result
+     * @throws Meteor.Error
+     */
+    TVDB.prototype.getInfo = function(tvShowId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        tvShowId = parseInt(tvShowId);
+        if (tvShowId <= 0) {
+            throw new Meteor.Error(4113, 'Invalid parameter "tvShowId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfo", tvShowId, function(error, result) {
             done(error, result);
             self.decWorkers();
         });

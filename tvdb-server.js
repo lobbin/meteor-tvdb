@@ -57,7 +57,7 @@
                 Meteor.TVDB().incWorkers();
                 Meteor.TVDB().tvdb.findTvShow(name, function(err, tvShows) {
                     if (err) {
-                        future.ret(new Meteor.Error(4103, err));
+                        future.ret(new Meteor.Error(4104, err));
                     } else {
                         future.ret(tvShows);
                     }
@@ -65,6 +65,22 @@
                 return future.wait();
             } else {
                 throw new Meteor.Error(4001, 'Not a valid show name');
+            }
+        },
+        "tvdbGetInfo": function(tvShowId) {
+            if (tvShowId && parseInt(tvShowId) > 0) {
+                var future = new Future;
+                Meteor.TVDB().incWorkers();
+                Meteor.TVDB().tvdb.getInfo(tvShowId, function(err, tvShowInfo) {
+                    if (err) {
+                        future.ret(new Meteor.Error(4105, err));
+                    } else {
+                        future.ret(tvShowInfo);
+                    }
+                });
+                return future.wait();
+            } else {
+                throw new Meteor.Error(4002, 'Not a valid tv show id')
             }
         }
     });
