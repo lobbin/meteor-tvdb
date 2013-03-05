@@ -188,7 +188,7 @@
             throw new Meteor.Error(4111, 'Missing return function');
         }
 
-        if (period !== 'string' || period.length < 1) {
+        if (typeof period !== 'string' || period.length < 1) {
             throw new Meteor.Error(4113, 'Invalid parameter "period"');
         }
 
