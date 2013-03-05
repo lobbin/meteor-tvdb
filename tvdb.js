@@ -177,6 +177,28 @@
         });
     };
 
+    /**
+     * thetvdb.com API call for getting tv show update information
+     * @param {String} period day, week or month
+     * @param {APIdone} done Function called when we have a server result
+     * @throws Meteor.Error
+     */
+    TVDB.prototype.getUpdates = function(period, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        if (period !== 'string' || period.length < 1) {
+            throw new Meteor.Error(4113, 'Invalid parameter "period"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetUpdates", period, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
     /*
      * Client side functions
      */

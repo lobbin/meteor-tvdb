@@ -16,7 +16,6 @@
         },
         "tvdbGetLanguages": function() {
             var future = new Future;
-            Meteor.TVDB().incWorkers();
             Meteor.TVDB().tvdb.getLanguages(function(err, languages) {
                 Meteor.TVDB().decWorkers();
                 if (err) {
@@ -29,7 +28,6 @@
         },
         "tvdbGetMirrors": function() {
             var future = new Future;
-            Meteor.TVDB().incWorkers();
             Meteor.TVDB().tvdb.getMirrors(function(err, mirrors) {
                 if (err) {
                     future.ret(new Meteor.Error(4102, err));
@@ -41,7 +39,6 @@
         },
         "tvdbGetServerTime": function() {
             var future = new Future;
-            Meteor.TVDB().incWorkers();
             Meteor.TVDB().tvdb.getServerTime(function(err, serverTime) {
                 if (err) {
                     future.ret(new Meteor.Error(4103, err));
@@ -54,7 +51,6 @@
         "tvdbFindTvShow": function(name) {
             if (name && name.length > 0) {
                 var future = new Future();
-                Meteor.TVDB().incWorkers();
                 Meteor.TVDB().tvdb.findTvShow(name, function(err, tvShows) {
                     if (err) {
                         future.ret(new Meteor.Error(4104, err));
@@ -70,7 +66,6 @@
         "tvdbGetInfo": function(tvShowId) {
             if (tvShowId && parseInt(tvShowId) > 0) {
                 var future = new Future;
-                Meteor.TVDB().incWorkers();
                 Meteor.TVDB().tvdb.getInfo(tvShowId, function(err, tvShowInfo) {
                     if (err) {
                         future.ret(new Meteor.Error(4105, err));
@@ -81,6 +76,19 @@
                 return future.wait();
             } else {
                 throw new Meteor.Error(4002, 'Not a valid tv show id')
+            }
+        },
+        "tvdbGetUpdates": function(period) {
+            if (period) {
+                var future = new Future;
+                Meteor.TVDB().tvdb.getUpdates(period, function(err, updates) {
+                    if (err) {
+                        future.ret(new Meteor.Error(4106, err));
+                    } else {
+                        future.ret(updates);
+                    }
+                });
+                return future.wait();
             }
         }
     });
