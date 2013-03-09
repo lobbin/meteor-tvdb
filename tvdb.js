@@ -177,6 +177,40 @@
         });
     };
 
+    TVDB.prototype.getInfoTvShow = function(tvShowId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        tvShowId = parseInt(tvShowId);
+        if (tvShowId <= 0) {
+            throw new Meteor.Error(4113, 'Invalid parameter "tvShowId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfoTvShow", tvShowId, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
+    TVDB.prototype.getInfoTvShow = function(episodeId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        episodeId = parseInt(episodeId);
+        if (episodeId <= 0) {
+            throw new Meteor.Error(4114, 'Invalid parameter "episodeId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfoEpisode", episodeId, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
     /**
      * thetvdb.com API call for getting tv show update information
      * @param {String} period day, week or month
@@ -189,7 +223,7 @@
         }
 
         if (typeof period !== 'string' || period.length < 1) {
-            throw new Meteor.Error(4113, 'Invalid parameter "period"');
+            throw new Meteor.Error(4115, 'Invalid parameter "period"');
         }
 
         var self = this; self.incWorkers();

@@ -75,7 +75,37 @@
                 });
                 return future.wait();
             } else {
-                throw new Meteor.Error(4002, 'Not a valid tv show id')
+                throw new Meteor.Error(4002, 'Not a valid tv show id');
+            }
+        },
+        "tvdbGetInfoTvShow": function(tvShowId) {
+            if (tvShowId && parseInt(tvShowId) > 0) {
+                var future = new Future;
+                Meteor.TVDB().tvdb.getInfoTvShow(tvShowId, function(err, tvShowInfo) {
+                    if (err) {
+                        future.ret(new Meteor.Error(4106, err));
+                    } else {
+                        future.ret(tvShowInfo);
+                    }
+                });
+                return future.wait();
+            } else {
+                throw new Meteor.Error(4002, 'Not a valid tv show id');
+            }
+        },
+        "tvdbGetInfoEpisode": function(episodeId) {
+            if (episodeId && parseInt(episodeId) > 0) {
+                var future = new Future;
+                Meteor.TVDB().tvdb.getInfoEpisode(episodeId, function(err, episodeInfo) {
+                    if (err) {
+                        future.ret(new Meteor.Error(4107, err));
+                    } else {
+                        future.ret(episodeId);
+                    }
+                });
+                return future.wait();
+            } else {
+                throw new Meteor.Error(4003, 'Not a valid episode id');
             }
         },
         "tvdbGetUpdates": function(period) {
@@ -83,12 +113,14 @@
                 var future = new Future;
                 Meteor.TVDB().tvdb.getUpdates(period, function(err, updates) {
                     if (err) {
-                        future.ret(new Meteor.Error(4106, err));
+                        future.ret(new Meteor.Error(4108, err));
                     } else {
                         future.ret(updates);
                     }
                 });
                 return future.wait();
+            } else {
+                throw new Meteor.Error(4004, 'No period provided');
             }
         }
     });
