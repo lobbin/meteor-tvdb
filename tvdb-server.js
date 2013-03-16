@@ -100,7 +100,7 @@
                     if (err) {
                         future.ret(new Meteor.Error(4107, err));
                     } else {
-                        future.ret(episodeId);
+                        future.ret(episodeInfo);
                     }
                 });
                 return future.wait();

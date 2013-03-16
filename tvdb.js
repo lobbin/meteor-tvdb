@@ -194,7 +194,7 @@
         });
     };
 
-    TVDB.prototype.getInfoTvShow = function(episodeId, done) {
+    TVDB.prototype.getInfoEpisode = function(episodeId, done) {
         if (typeof done !== 'function') {
             throw new Meteor.Error(4111, 'Missing return function');
         }
