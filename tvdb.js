@@ -38,7 +38,7 @@
             this.workers = 0;
             this.listeners = {};
 
-            Meteor.autosubscribe(function() {
+            Meteor.autorun(function() {
                 Meteor.subscribe('tvdb_info');
             });
         }
@@ -51,7 +51,7 @@
      */
     TVDB.prototype.setConfiguration = function(configuration) {
         if (Meteor.isServer) {
-            this.collection.insert({name: 'configuration', options: options});
+            this.collection.insert({name: 'configuration', options: configuration});
             this.createTVDBObject();
         } else {
             throw new Meteor.Error(4110, 'Not callable from client');
@@ -154,6 +154,85 @@
         });
     };
 
+    /**
+     * thetvdb.com API call for getting tv show information
+     * @param {Number} tvShowId Unique show id
+     * @param {APIdone} done Function called when we have a server result
+     * @throws Meteor.Error
+     */
+    TVDB.prototype.getInfo = function(tvShowId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        tvShowId = parseInt(tvShowId);
+        if (tvShowId <= 0) {
+            throw new Meteor.Error(4113, 'Invalid parameter "tvShowId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfo", tvShowId, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
+    TVDB.prototype.getInfoTvShow = function(tvShowId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        tvShowId = parseInt(tvShowId);
+        if (tvShowId <= 0) {
+            throw new Meteor.Error(4113, 'Invalid parameter "tvShowId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfoTvShow", tvShowId, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
+    TVDB.prototype.getInfoEpisode = function(episodeId, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        episodeId = parseInt(episodeId);
+        if (episodeId <= 0) {
+            throw new Meteor.Error(4114, 'Invalid parameter "episodeId"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetInfoEpisode", episodeId, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
+    /**
+     * thetvdb.com API call for getting tv show update information
+     * @param {String} period day, week or month
+     * @param {APIdone} done Function called when we have a server result
+     * @throws Meteor.Error
+     */
+    TVDB.prototype.getUpdates = function(period, done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
+        if (typeof period !== 'string' || period.length < 1) {
+            throw new Meteor.Error(4115, 'Invalid parameter "period"');
+        }
+
+        var self = this; self.incWorkers();
+        return Meteor.call("tvdbGetUpdates", period, function(error, result) {
+            done(error, result);
+            self.decWorkers();
+        });
+    };
+
     /*
      * Client side functions
      */
@@ -217,7 +296,7 @@
      */
     TVDB.prototype.createTVDBObject = function() {
         var configuration = this.collection.findOne({name: 'configuration'});
-        if (configuration.options.apikey) {
+        if (configuration && configuration.options && configuration.options.apikey) {
             // Some Node automagic
             var require = __meteor_bootstrap__.require;
             var path = require('path');
