@@ -51,7 +51,7 @@
      */
     TVDB.prototype.setConfiguration = function(configuration) {
         if (Meteor.isServer) {
-            this.collection.insert({name: 'configuration', options: options});
+            this.collection.insert({name: 'configuration', options: configuration});
             this.createTVDBObject();
         } else {
             throw new Meteor.Error(4110, 'Not callable from client');
@@ -296,7 +296,7 @@
      */
     TVDB.prototype.createTVDBObject = function() {
         var configuration = this.collection.findOne({name: 'configuration'});
-        if (configuration.options.apikey) {
+        if (configuration && configuration.options && configuration.options.apikey) {
             // Some Node automagic
             var require = __meteor_bootstrap__.require;
             var path = require('path');
