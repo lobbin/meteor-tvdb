@@ -50,6 +50,7 @@
                     if (error) {
                         Meteor._debug("Error configurating tvdb server " + error.reason);
                     } else {
+                        tvdbSession.set('configured', true);
                         tvdbSession.set('configureDialogVisible', false);
                     }
                 });
