@@ -24,9 +24,13 @@
             return true;
         },
         "tvdbGetLanguages": function() {
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
+
             var future = new Future;
             Meteor.TVDB().tvdb.getLanguages(function(err, languages) {
-                Meteor.TVDB().decWorkers();
                 if (err) {
                     future.ret(new Meteor.Error(4101, err));
                 } else {
@@ -36,6 +40,11 @@
             return future.wait();
         },
         "tvdbGetMirrors": function() {
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
+
             var future = new Future;
             Meteor.TVDB().tvdb.getMirrors(function(err, mirrors) {
                 if (err) {
@@ -47,6 +56,12 @@
             return future.wait();
         },
         "tvdbGetServerTime": function() {
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                console.log(e);
+                return e;
+            }
+
             var future = new Future;
             Meteor.TVDB().tvdb.getServerTime(function(err, serverTime) {
                 if (err) {
@@ -59,6 +74,10 @@
         },
         "tvdbFindTvShow": function(name) {
             check(name, NonEmptyString);
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             var future = new Future();
             Meteor.TVDB().tvdb.findTvShow(name, function(err, tvShows) {
@@ -73,6 +92,10 @@
         "tvdbGetInfo": function(tvShowId, language) {
             check(tvShowId, PositiveInt);
             check(language, NonEmptyString);
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             var future = new Future;
             Meteor.TVDB().tvdb.getInfo(tvShowId, function(err, tvShowInfo) {
@@ -87,6 +110,10 @@
         "tvdbGetInfoTvShow": function(tvShowId, language) {
             check(tvShowId, PositiveInt);
             check(language, NonEmptyString);
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             var future = new Future;
             Meteor.TVDB().tvdb.getInfoTvShow(tvShowId, function(err, tvShowInfo) {
@@ -101,6 +128,10 @@
         "tvdbGetInfoEpisode": function(episodeId, language) {
             check(episodeId, PositiveInt);
             check(language, NonEmptyString);
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             var future = new Future;
             Meteor.TVDB().tvdb.getInfoEpisode(episodeId, function(err, episodeInfo) {
@@ -114,6 +145,10 @@
         },
         "tvdbGetUpdates": function(period) {
             check(period, NonEmptyString);
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             var future = new Future;
             Meteor.TVDB().tvdb.getUpdates(period, function(err, updates) {

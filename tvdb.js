@@ -20,6 +20,9 @@
     TVDB.prototype.init = function(options) {
         var self = this;
 
+        // Execution filter
+        this.filter = null;
+
         // Handle settings
         this.collectionName = options && options.collectionName || 'tvdb';
 
@@ -41,6 +44,14 @@
             Meteor.autorun(function() {
                 Meteor.subscribe('tvdb_info');
             });
+        }
+    };
+
+    TVDB.prototype.setExecutionFilter = function(filter) {
+        if (typeof filter == 'function') {
+            this.filter = filter;
+        } else {
+            throw new Meteor.Error(4116, 'Must be a function');
         }
     };
 
@@ -72,6 +83,18 @@
      */
     TVDB.prototype.isWorking = function() {
         return this.getWorkers() > 0;
+    };
+
+    /**
+     * Check filter function
+     * @returns {Boolean}
+     */
+    TVDB.prototype.checkFilterFunction = function() {
+        if (this.filter && !this.filter()) {
+            return new Meteor.Error(4117, 'Not matching filter');
+        }
+
+        return true;
     };
 
     // @TODO: Handle more languages
@@ -244,6 +267,7 @@
 
     /**
      * Helper function to increase the number of workers
+     * @private
      */
     TVDB.prototype.incWorkers = function() {
         this.setWorkers(this.getWorkers()+1);
@@ -251,6 +275,7 @@
 
     /**
      * Helper function to decrease the number of workers
+     * @private
      */
     TVDB.prototype.decWorkers = function() {
         this.setWorkers(this.getWorkers()-1);
@@ -269,6 +294,7 @@
 
     /**
      * Reactive function for setting the current number of workers
+     * @private
      * @param workers
      */
     TVDB.prototype.setWorkers = function(workers) {
