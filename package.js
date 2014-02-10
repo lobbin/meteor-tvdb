@@ -15,6 +15,7 @@ Npm.depends({tvdb: "0.0.12"});
 Package.on_use(function(api) {
     // Deps
     api.use(["less", "templating"], "client");
+    api.use(["check"], "server");
 
     // Add files
     api.add_files([
