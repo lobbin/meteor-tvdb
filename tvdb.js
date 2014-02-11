@@ -20,6 +20,9 @@
     TVDB.prototype.init = function(options) {
         var self = this;
 
+        // Execution filter
+        this.filter = null;
+
         // Handle settings
         this.collectionName = options && options.collectionName || 'tvdb';
 
@@ -36,11 +39,19 @@
 
         if (Meteor.isClient) {
             this.workers = 0;
-            this.listeners = {};
+            this.workersDep = new Deps.Dependency;
 
             Meteor.autorun(function() {
                 Meteor.subscribe('tvdb_info');
             });
+        }
+    };
+
+    TVDB.prototype.setExecutionFilter = function(filter) {
+        if (typeof filter == 'function') {
+            this.filter = filter;
+        } else {
+            throw new Meteor.Error(4116, 'Must be a function');
         }
     };
 
@@ -72,6 +83,18 @@
      */
     TVDB.prototype.isWorking = function() {
         return this.getWorkers() > 0;
+    };
+
+    /**
+     * Check filter function
+     * @returns {Boolean}
+     */
+    TVDB.prototype.checkFilterFunction = function() {
+        if (this.filter && !this.filter()) {
+            return new Meteor.Error(4117, 'Not matching filter');
+        }
+
+        return true;
     };
 
     // @TODO: Handle more languages
@@ -107,6 +130,10 @@
      * @throws Meteor.Error
      */
     TVDB.prototype.getMirrors = function(done) {
+        if (typeof done !== 'function') {
+            throw new Meteor.Error(4111, 'Missing return function');
+        }
+
         var self = this; self.incWorkers();
         return Meteor.call("tvdbGetMirrors", null, function(error, result) {
             done(error, result);
@@ -158,9 +185,10 @@
      * thetvdb.com API call for getting tv show information
      * @param {Number} tvShowId Unique show id
      * @param {APIdone} done Function called when we have a server result
+     * @param {String} language
      * @throws Meteor.Error
      */
-    TVDB.prototype.getInfo = function(tvShowId, done) {
+    TVDB.prototype.getInfo = function(tvShowId, done, language) {
         if (typeof done !== 'function') {
             throw new Meteor.Error(4111, 'Missing return function');
         }
@@ -171,13 +199,13 @@
         }
 
         var self = this; self.incWorkers();
-        return Meteor.call("tvdbGetInfo", tvShowId, function(error, result) {
+        return Meteor.call("tvdbGetInfo", tvShowId, language, function(error, result) {
             done(error, result);
             self.decWorkers();
         });
     };
 
-    TVDB.prototype.getInfoTvShow = function(tvShowId, done) {
+    TVDB.prototype.getInfoTvShow = function(tvShowId, done, language) {
         if (typeof done !== 'function') {
             throw new Meteor.Error(4111, 'Missing return function');
         }
@@ -188,13 +216,13 @@
         }
 
         var self = this; self.incWorkers();
-        return Meteor.call("tvdbGetInfoTvShow", tvShowId, function(error, result) {
+        return Meteor.call("tvdbGetInfoTvShow", tvShowId, language, function(error, result) {
             done(error, result);
             self.decWorkers();
         });
     };
 
-    TVDB.prototype.getInfoEpisode = function(episodeId, done) {
+    TVDB.prototype.getInfoEpisode = function(episodeId, done, language) {
         if (typeof done !== 'function') {
             throw new Meteor.Error(4111, 'Missing return function');
         }
@@ -205,7 +233,7 @@
         }
 
         var self = this; self.incWorkers();
-        return Meteor.call("tvdbGetInfoEpisode", episodeId, function(error, result) {
+        return Meteor.call("tvdbGetInfoEpisode", episodeId, language, function(error, result) {
             done(error, result);
             self.decWorkers();
         });
@@ -239,6 +267,7 @@
 
     /**
      * Helper function to increase the number of workers
+     * @private
      */
     TVDB.prototype.incWorkers = function() {
         this.setWorkers(this.getWorkers()+1);
@@ -246,6 +275,7 @@
 
     /**
      * Helper function to decrease the number of workers
+     * @private
      */
     TVDB.prototype.decWorkers = function() {
         this.setWorkers(this.getWorkers()-1);
@@ -256,22 +286,15 @@
      * @return {Integer}
      */
     TVDB.prototype.getWorkers = function() {
-        var context = Meteor.deps.Context.current;
-
-        if (context && !this.listeners[context.id]) {
-            this.listeners[context.id] = context;
-
-            var self = this;
-            context.onInvalidate(function() {
-                delete self.listeners[context.id];
-            })
+        if (this.workersDep) {
+            this.workersDep.depend();
         }
-
         return this.workers;
     };
 
     /**
      * Reactive function for setting the current number of workers
+     * @private
      * @param workers
      */
     TVDB.prototype.setWorkers = function(workers) {
@@ -281,8 +304,8 @@
 
         this.workers = workers;
 
-        for (var contextId in this.listeners) {
-            this.listeners[contextId].invalidate();
+        if (this.workersDep) {
+            this.workersDep.changed();
         }
     };
 
@@ -297,14 +320,7 @@
     TVDB.prototype.createTVDBObject = function() {
         var configuration = this.collection.findOne({name: 'configuration'});
         if (configuration && configuration.options && configuration.options.apikey) {
-            // Some Node automagic
-            var require = __meteor_bootstrap__.require;
-            var path = require('path');
-            var fs = require('fs');
-            var base = path.resolve('.');
-            var isBundle = fs.existsSync(base + '/bundle');
-            var modulePath = base + (isBundle ? '/bundle/static' : '/public') + '/node_modules';
-            var tvdb = require(modulePath + '/tvdb');
+            var tvdb = Npm.require('tvdb');
 
             this.tvdb = new tvdb({apiKey: configuration.options.apikey});
         }
