@@ -1,4 +1,4 @@
-# A meteor library for communicating with thetvdb.com Version 0.2.1
+# A meteor library for communicating with thetvdb.com Version 0.2.2-dev
 
 ## How to install
 
