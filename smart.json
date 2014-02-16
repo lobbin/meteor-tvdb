@@ -3,6 +3,6 @@
     "description": "Library for communicating with thetvdb.com",
     "homepage": "https://github.com/lobbin/meteor-tvdb",
     "author": "Robin Helgelin <lobbin@gmail.com>",
-    "version": "0.2.2",
+    "version": "0.2.3-dev",
     "git": "https://github.com/lobbin/meteor-tvdb.git"
 }
