@@ -32,7 +32,7 @@
         if (Meteor.isServer) {
             this.createTVDBObject();
 
-            Meteor.publish('tvdb_info', function() {
+            Meteor.publish(this.collectionName, function() {
                 return self.collection.find({name: 'configuration'}, {fields: {'options.apikey': 0}});
             });
         }
@@ -41,9 +41,7 @@
             this.workers = 0;
             this.workersDep = new Deps.Dependency;
 
-            Meteor.autorun(function() {
-                Meteor.subscribe('tvdb_info');
-            });
+            Meteor.subscribe(this.collectionName);
         }
     };
 
