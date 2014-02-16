@@ -9,12 +9,12 @@ Package.describe({
     summary: 'A meteor library for communicating with thetvdb.com'
 });
 
-Npm.depends({tvdb: "0.0.12"});
+Npm.depends({tvdb: "0.0.13"});
 
 // Package usage
 Package.on_use(function(api) {
     // Deps
-    api.use(["less", "templating"], "client");
+    api.use(["less", "handlebars", "templating"], "client");
     api.use(["check"], "server");
 
     // Add files

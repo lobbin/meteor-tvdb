@@ -19,6 +19,10 @@
     Meteor.methods({
         "tvdbConfigure": function(options) {
             check(options, {apikey: NonEmptyString});
+            var e;
+            if ((e = Meteor.TVDB().checkFilterFunction()) != true) {
+                return e;
+            }
 
             Meteor.TVDB().setConfiguration(options);
             return true;
@@ -32,9 +36,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getLanguages(function(err, languages) {
                 if (err) {
-                    future.ret(new Meteor.Error(4101, err));
+                    future.return(new Meteor.Error(4101, err));
                 } else {
-                    future.ret(languages);
+                    future.return(languages);
                 }
             });
             return future.wait();
@@ -48,9 +52,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getMirrors(function(err, mirrors) {
                 if (err) {
-                    future.ret(new Meteor.Error(4102, err));
+                    future.return(new Meteor.Error(4102, err));
                 } else {
-                    future.ret(mirrors);
+                    future.return(mirrors);
                 }
             });
             return future.wait();
@@ -65,9 +69,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getServerTime(function(err, serverTime) {
                 if (err) {
-                    future.ret(new Meteor.Error(4103, err));
+                    future.return(new Meteor.Error(4103, err));
                 } else {
-                    future.ret(serverTime);
+                    future.return(serverTime);
                 }
             });
             return future.wait();
@@ -82,9 +86,9 @@
             var future = new Future();
             Meteor.TVDB().tvdb.findTvShow(name, function(err, tvShows) {
                 if (err) {
-                    future.ret(new Meteor.Error(4104, err));
+                    future.return(new Meteor.Error(4104, err));
                 } else {
-                    future.ret(tvShows);
+                    future.return(tvShows);
                 }
             });
             return future.wait();
@@ -100,9 +104,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getInfo(tvShowId, function(err, tvShowInfo) {
                 if (err) {
-                    future.ret(new Meteor.Error(4105, err));
+                    future.return(new Meteor.Error(4105, err));
                 } else {
-                    future.ret(tvShowInfo);
+                    future.return(tvShowInfo);
                 }
             }, language);
             return future.wait();
@@ -118,9 +122,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getInfoTvShow(tvShowId, function(err, tvShowInfo) {
                 if (err) {
-                    future.ret(new Meteor.Error(4106, err));
+                    future.return(new Meteor.Error(4106, err));
                 } else {
-                    future.ret(tvShowInfo);
+                    future.return(tvShowInfo);
                 }
             }, language);
             return future.wait();
@@ -136,9 +140,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getInfoEpisode(episodeId, function(err, episodeInfo) {
                 if (err) {
-                    future.ret(new Meteor.Error(4107, err));
+                    future.return(new Meteor.Error(4107, err));
                 } else {
-                    future.ret(episodeInfo);
+                    future.return(episodeInfo);
                 }
             }, language);
             return future.wait();
@@ -153,9 +157,9 @@
             var future = new Future;
             Meteor.TVDB().tvdb.getUpdates(period, function(err, updates) {
                 if (err) {
-                    future.ret(new Meteor.Error(4108, err));
+                    future.return(new Meteor.Error(4108, err));
                 } else {
-                    future.ret(updates);
+                    future.return(updates);
                 }
             });
             return future.wait();
